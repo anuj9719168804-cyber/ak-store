@@ -1,0 +1,12 @@
+pyrofork==2.3.50
+TgCrypto
+motor
+dnspython
+humanize
+psutil
+requests
+quart
+hypercorn
+python-dotenv
+cryptography
+aiohttp

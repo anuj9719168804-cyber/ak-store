@@ -1,0 +1,24 @@
+# ================================================
+# File-Store-Pro — render.yaml
+# Platform: Render.com
+# Made by: botifyx-bots | @BotifyX_Pro_Botz
+# ------------------------------------------------
+# ⚠️  Edit config.py with your values BEFORE deploying.
+# Push to GitHub → Render auto-detects this file.
+# ------------------------------------------------
+# NOTE: Render injects PORT=10000 automatically; config.py reads it.
+# One web server (panel + streaming) listens on that port.
+# Set these env vars in the Render dashboard:
+#   WEB_URL=https://<your-service>.onrender.com   (Render also sets RENDER_EXTERNAL_URL)
+#   ADMIN_PASSWORD=<long random value>
+# ================================================
+
+services:
+  - type: web
+    name: file-store-pro-bot
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free                  # free / starter / standard / pro
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
