@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>File Store Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js" defer></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <a href="{{ panel }}/">Dashboard</a>
+    <a href="{{ panel }}/users">Users</a>
+    <a href="{{ panel }}/bans">Bans</a>
+    <a href="{{ panel }}/referrals">Referrals</a>
+    <a href="{{ panel }}/codes">Gift codes</a>
+    <a href="{{ panel }}/support">Support</a>
+    <a href="{{ panel }}/files">Files</a>
+    <a href="{{ panel }}/premium">Premium</a>
+    <a href="{{ panel }}/admins">Admins</a>
+    <a href="{{ panel }}/channels">Channels</a>
+    <a href="{{ panel }}/settings">Settings</a>
+    <a href="{{ panel }}/links">Stream links</a>
+    <a href="{{ panel }}/managed">Limited links</a>
+    <a href="{{ panel }}/analytics">Analytics</a>
+    <a href="{{ panel }}/verification">Verification</a>
+    <a href="{{ panel }}/broadcast">Broadcast</a>
+    <a href="{{ panel }}/logs">Logs</a>
+    <a href="{{ panel }}/restart">Restart</a>
+    <form method="POST" action="{{ panel }}/logout" class="logout-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="logout">Logout</button>
+    </form>
+</div>
+
+<div class="main">
+    {% for kind, text in flashes|default([]) %}
+    <div class="flash {{ kind }}">{{ text }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

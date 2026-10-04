@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>User <code>{{ u.id }}</code>
+    {% if u.banned %}<span class="badge red">banned</span>{% endif %}
+    {% if u.premium %}<span class="badge green">premium</span>{% endif %}
+    {% if is_admin %}<span class="badge">admin</span>{% endif %}
+</h1>
+<p class="hint"><a href="{{ panel }}/users" style="color:var(--accent)">&larr; All users</a>
+    · <a href="tg://user?id={{ u.id }}" style="color:var(--accent)">Open in Telegram</a></p>
+
+<div class="card-grid">
+    <div class="card"><h3>Credits</h3><p>{{ u.credits }}</p></div>
+    <div class="card"><h3>Invited users</h3><p>{{ u.referrals }}</p></div>
+    <div class="card"><h3>Joined (IST)</h3><p style="font-size:16px">{{ ist(u.joined, "%Y-%m-%d %H:%M") if u.joined else "before v9" }}</p></div>
+    <div class="card"><h3>Verified</h3><p style="font-size:16px">{{ "yes" if u.verified else "no" }}</p></div>
+    <div class="card"><h3>Premium</h3><p style="font-size:16px">
+        {% if u.premium_lifetime %}lifetime
+        {% elif u.premium %}until {{ u.premium_until.strftime("%Y-%m-%d") if u.premium_until else "?" }}
+        {% elif u.premium_expired %}expired
+        {% else %}no{% endif %}</p></div>
+    <div class="card"><h3>Free trial</h3><p style="font-size:16px">{{ "used" if u.trial_used else "not used" }}</p></div>
+</div>
+
+<h2>Credits</h2>
+<form method="POST" class="form-box row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="credits">
+    <select name="mode">
+        <option value="add">Add</option>
+        <option value="deduct">Deduct</option>
+        <option value="set">Set to</option>
+    </select>
+    <input type="number" name="amount" min="0" placeholder="Credits" required>
+    <button type="submit">Apply</button>
+</form>
+
+<h2>Premium</h2>
+<form method="POST" class="form-box row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="number" name="days" min="1" placeholder="Days to add (empty = lifetime)">
+    <button name="action" value="premium_add">Add premium</button>
+    {% if u.premium or u.premium_expired %}
+    <button class="danger" name="action" value="premium_remove" data-confirm="Remove premium from {{ u.id }}?">Remove premium</button>
+    {% endif %}
+</form>
+<p class="hint">Days are added to the time the user has left, the same way a payment or gift code does.</p>
+
+<h2>Ban</h2>
+{% if u.banned %}
+<div class="form-box">
+    <p>This user is banned{% if u.banned_at %} since {{ ist(u.banned_at, "%Y-%m-%d %H:%M") }} IST{% endif %}.
+       {% if u.ban_reason %}<br><b>Reason:</b> {{ u.ban_reason }}{% else %}<br><span class="hint">No reason was saved.</span>{% endif %}</p>
+    <form method="POST" style="margin-top:12px">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button name="action" value="unban">Unban</button>
+    </form>
+</div>
+{% elif is_admin %}
+<p class="hint">Admins can't be banned.</p>
+{% else %}
+<form method="POST" class="form-box row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="text" name="reason" maxlength="200" placeholder="Reason (shown to the user, optional)">
+    <button class="danger" name="action" value="ban" data-confirm="Ban {{ u.id }}?">Ban</button>
+</form>
+{% endif %}
+
+<h2>Send a message</h2>
+<form method="POST" class="form-box">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="message">
+    <textarea name="text" rows="3" maxlength="1000" placeholder="Plain text, sent to this user by the bot" required></textarea>
+    <button type="submit">Send</button>
+</form>
+
+<h2>Referrals</h2>
+<p class="hint">Invited by: {% if u.referred_by %}<a href="{{ panel }}/users/{{ u.referred_by }}" style="color:var(--accent)">{{ u.referred_by }}</a>{% else %}nobody{% endif %}</p>
+{% if u.invited %}
+<div class="table-wrap"><table>
+    <tr><th>Invited user</th><th>When (IST)</th><th>Paid out</th></tr>
+    {% for r in u.invited %}
+    <tr>
+        <td><a href="{{ panel }}/users/{{ r.id }}" style="color:var(--accent)">{{ r.id }}</a></td>
+        <td>{{ ist(r.at, "%Y-%m-%d %H:%M") if r.at else "-" }}</td>
+        <td>{{ "yes" if r.qualified else "waiting" }}</td>
+    </tr>
+    {% endfor %}
+</table></div>
+{% endif %}
+
+<h2>Credit history</h2>
+{% if u.ledger %}
+<div class="table-wrap"><table>
+    <tr><th>When (IST)</th><th>Credits</th><th>Source</th><th>Details</th></tr>
+    {% for r in u.ledger %}
+    <tr>
+        <td>{{ ist(r.at, "%Y-%m-%d %H:%M") if r.at else "-" }}</td>
+        <td>{{ "%+d"|format(r.delta) }}</td>
+        <td>{{ r.kind }}</td>
+        <td style="white-space:normal">{{ r.ref }}{% if r.note %} · {{ r.note }}{% endif %}</td>
+    </tr>
+    {% endfor %}
+</table></div>
+{% else %}<p class="hint">Nothing recorded yet. Only credits that were given are logged.</p>{% endif %}
+
+<h2>Orders</h2>
+{% if u.orders %}
+<div class="table-wrap"><table>
+    <tr><th>When (IST)</th><th>What</th><th>Method</th><th>Amount</th><th>Status</th></tr>
+    {% for o in u.orders %}
+    <tr>
+        <td>{{ ist(o.created, "%Y-%m-%d %H:%M") if o.created else "-" }}</td>
+        <td>{{ o.kind }} / {{ o.plan }}</td><td>{{ o.method }}</td>
+        <td>{% if o.currency == "INR" %}₹{{ "%g"|format(o.amount / 100) }}{% else %}${{ "%g"|format(o.amount) }}{% endif %}</td>
+        <td>{{ o.status }}</td>
+    </tr>
+    {% endfor %}
+</table></div>
+{% else %}<p class="hint">No orders.</p>{% endif %}
+
+{% if u.support %}
+<h2>Support</h2>
+<p><a href="{{ panel }}/support/{{ u.id }}" style="color:var(--accent)">Open the conversation ({{ u.support.msgs }} messages{% if u.support.unread %}, {{ u.support.unread }} unread{% endif %})</a></p>
+{% endif %}
+
+{% endblock %}

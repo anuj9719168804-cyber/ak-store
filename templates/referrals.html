@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Referrals <span class="badge">{{ total }} inviters</span></h1>
+
+<div class="card-grid">
+    <div class="card"><h3>Users invited</h3><p>{{ summary.invited_total }}</p></div>
+    <div class="card"><h3>Paid out</h3><p>{{ summary.paid_out }}</p></div>
+    <div class="card"><h3>Waiting for first file</h3><p>{{ summary.waiting }}</p></div>
+</div>
+
+<div class="table-wrap">
+<table>
+<tr><th>#</th><th>User</th><th>Invited (paid)</th><th>Credits now</th></tr>
+{% for r in rows %}
+<tr>
+    <td>{{ first_rank + loop.index0 }}</td>
+    <td><a href="{{ panel }}/users/{{ r.id }}" style="color:var(--accent)">{{ r.id }}</a></td>
+    <td>{{ r.referrals }}</td>
+    <td>{{ r.credits }}</td>
+</tr>
+{% else %}
+<tr><td colspan="4">Nobody has earned a referral yet.</td></tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="pager">
+    {% if page > 1 %}<a href="?page={{ page - 1 }}">&larr; Previous</a>{% endif %}
+    {% if has_next %}<a href="?page={{ page + 1 }}">Next &rarr;</a>{% endif %}
+</div>
+
+{% endblock %}

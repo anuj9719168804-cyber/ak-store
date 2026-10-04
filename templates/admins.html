@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Admins</h1>
+
+<form method="POST" class="form-box row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="number" name="user_id" placeholder="User ID" required>
+    <button name="action" value="add">Add admin</button>
+    <button name="action" value="remove" class="danger" data-confirm="Remove this admin?">Remove admin</button>
+</form>
+
+<input type="search" class="filter" data-filter="admins-table" placeholder="Filter this list...">
+
+<div class="table-wrap">
+<table id="admins-table">
+<tr><th>User ID</th><th>Role</th></tr>
+{% for a in admins %}
+<tr><td>{{ a }}</td><td>{% if a == owner %}<span class="badge green">owner</span>{% else %}admin{% endif %}</td></tr>
+{% endfor %}
+</table>
+</div>
+
+{% endblock %}

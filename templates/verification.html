@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Verification quality</h1>
+<p class="hint">Risk score 0-100 per verification. <b>{{ flag }}+</b> = suspicious (still passes), <b>{{ block }}+</b> =
+    {{ "blocked (no credits)" if action == "block" else "only flagged" }}. "Faster than normal" needs at least 20 earlier real passes.</p>
+
+<div class="card-grid">
+    <div class="card"><h3>Checked</h3><p>{{ s.total }}</p></div>
+    <div class="card"><h3>Passed</h3><p>{{ s.passed }}</p></div>
+    <div class="card"><h3>Suspicious</h3><p>{{ s.flagged }}</p></div>
+    <div class="card"><h3>Blocked by score</h3><p>{{ s.blocked }}</p></div>
+    <div class="card"><h3>Too fast</h3><p>{{ s.too_fast }}</p></div>
+    <div class="card"><h3>Median (s)</h3><p>{{ "%.0f"|format(s.median) if s.median else "-" }}</p></div>
+    <div class="card"><h3>Fastest 10% (s)</h3><p>{{ "%.0f"|format(s.p10) if s.p10 else "-" }}</p></div>
+    <div class="card"><h3>Referrer seen</h3><p>{{ s.ref_ok }}/{{ s.total }}</p></div>
+</div>
+<p class="hint">
+    Now: <code>VERIFY_MIN_SECONDS={{ s.min_now }}</code>.
+    {% if s.suggest_min and s.samples >= 20 %}Your real users' fastest 10% take {{ "%.0f"|format(s.p10) }}s, so about
+        <code>VERIFY_MIN_SECONDS={{ s.suggest_min }}</code> would be a safe floor.
+    {% else %}Not enough data yet ({{ s.samples }} clean passes). Come back after ~20.{% endif %}
+    {% if s.total and s.ref_ok * 2 > s.total %}Most users arrive with a referrer: <code>VERIFY_REQUIRE_REFERRER=true</code> is probably safe to try.{% endif %}
+</p>
+
+<table>
+    <tr><th>When (IST)</th><th>User</th><th>Result</th><th>Time (s)</th><th>Risk</th><th>Why</th></tr>
+    {% for d in docs %}
+    <tr>
+        <td>{{ ist(d.created, "%m-%d %H:%M") }}</td><td>{{ d.user_id }}</td>
+        <td>{% if d.state == "failed" %}⛔ {{ "risk" if d.get("blocked_by_risk") else "too fast" }}{% elif d.get("flagged") %}⚠ suspicious{% else %}✅ ok{% endif %}</td>
+        <td>{{ "%.0f"|format(d.elapsed) }}</td><td>{{ d.get("risk", "-") }}</td><td>{{ d.get("reasons", [])|join("; ") }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

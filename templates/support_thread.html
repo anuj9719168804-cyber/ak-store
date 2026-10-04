@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>{{ t.name or t._id }}{% if t.username %} <span class="hint">@{{ t.username }}</span>{% endif %}
+    {% if t.open %}<span class="badge green">open</span>{% else %}<span class="badge">closed</span>{% endif %}</h1>
+<p class="hint"><a href="{{ panel }}/support" style="color:var(--accent)">&larr; Inbox</a>
+    · User <a href="{{ panel }}/users/{{ t._id }}" style="color:var(--accent)">{{ t._id }}</a></p>
+
+<div class="chat">
+{% for m in msgs %}
+    <div class="bubble {{ m.sender }}">
+        <div class="who">{{ "User" if m.sender == "user" else "Admin" }} · {{ ist(m.at, "%Y-%m-%d %H:%M") if m.at else "" }} IST</div>
+        <div class="text">{{ m.text }}</div>
+    </div>
+{% else %}
+    <p class="hint">No messages.</p>
+{% endfor %}
+</div>
+
+<form method="POST" class="form-box">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <textarea name="text" rows="4" maxlength="1000" placeholder="Your answer (plain text, the bot sends it to the user)"></textarea>
+    <button name="action" value="reply">Send answer</button>
+    {% if t.open %}
+    <button type="submit" name="action" value="close" formnovalidate>Close conversation</button>
+    {% else %}
+    <button type="submit" name="action" value="reopen" formnovalidate>Reopen</button>
+    {% endif %}
+</form>
+
+{% endblock %}

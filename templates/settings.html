@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Settings</h1>
+<p class="hint">Same options as the bot's /settings menu. Changes apply immediately and are saved, so they survive a restart.
+Force-sub and DB channels are managed from the bot (see <a href="{{ panel }}/channels" style="color:var(--accent)">Channels</a>).</p>
+
+<form method="POST" class="form-box">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="check">
+        <input type="checkbox" name="protect" {% if s.protect %}checked{% endif %}>
+        Protect content (users can't forward or save the files the bot sends)
+    </label>
+    <label class="check">
+        <input type="checkbox" name="shortner" {% if s.shortner %}checked{% endif %}>
+        URL shortener / token verification enabled
+    </label>
+    <label class="check">
+        <input type="checkbox" name="maintenance" {% if maintenance %}checked{% endif %}>
+        Maintenance mode (everyone except admins gets an "under maintenance" notice)
+    </label>
+    {% if permanent_url %}
+    <label class="check">
+        <input type="checkbox" name="permanent_link" {% if s.permanent_link %}checked{% endif %}>
+        Permanent links (generated links go through {{ permanent_url }} and keep working if the bot username changes)
+    </label>
+    {% endif %}
+    <label class="field" for="auto_del">Auto-delete timer in seconds (0 = never delete)</label>
+    <input type="number" id="auto_del" name="auto_del" min="0" max="604800" value="{{ s.auto_del }}" required>
+    {% if links_on %}
+    <label class="field" for="stream_ttl">Web link validity for NEW Watch / Download links (e.g. 1h, 30m, 2d, 0 = never, reset = default)</label>
+    <input type="text" id="stream_ttl" name="stream_ttl" value="{{ stream_ttl }}" maxlength="20">
+    {% endif %}
+    <button type="submit">Save settings</button>
+</form>
+
+{% endblock %}

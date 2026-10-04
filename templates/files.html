@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block head %}{% if scan.running %}<meta http-equiv="refresh" content="5">{% endif %}{% endblock %}
+{% block content %}
+
+<h1>Files <span class="badge">{{ total }}</span></h1>
+
+<form method="GET" class="form-box row">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search by file name, caption or message ID">
+    <select name="sort">
+        <option value="new" {% if sort == "new" %}selected{% endif %}>Newest first</option>
+        <option value="old" {% if sort == "old" %}selected{% endif %}>Oldest first</option>
+        <option value="downloads" {% if sort == "downloads" %}selected{% endif %}>Most downloaded</option>
+        <option value="size" {% if sort == "size" %}selected{% endif %}>Largest first</option>
+    </select>
+    <button type="submit">Search</button>
+</form>
+
+{% if scan.total is defined %}
+<div class="form-box">
+    <strong>{{ "Scanning the DB channels..." if scan.running else "Last scan finished" }}</strong>
+    <p class="hint" style="margin:8px 0 0">
+        Checked {{ scan.scanned }} of {{ scan.total }} messages &middot; {{ scan.added }} new files indexed
+        {% if scan.error %}&middot; <span style="color:#f87171">error: {{ scan.error }}</span>{% endif %}
+    </p>
+</div>
+{% endif %}
+
+<div class="table-wrap">
+<table>
+<tr><th>File</th><th>Size</th><th>Downloads</th><th>Added (IST)</th><th>Uploader</th><th></th></tr>
+{% for f in rows %}
+<tr>
+    <td class="name-cell" title="{{ f.name }}{% if f.caption %} - {{ f.caption }}{% endif %}">
+        {{ f.name }} <span class="badge">{{ f.kind }}</span>
+        {% if f.caption %}<div class="sub">{{ f.caption }}</div>{% endif %}
+    </td>
+    <td>{{ f.size_text }}</td>
+    <td>{{ f.downloads }}</td>
+    <td>{{ ist(f.added, "%Y-%m-%d %H:%M") if f.added else "-" }}</td>
+    <td>{{ f.uploader if f.uploader is not none else "-" }}</td>
+    <td>
+        {% if f.link %}<button type="button" class="small" data-copy="{{ f.link }}">Copy link</button>{% endif %}
+        <form method="POST" class="inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="file_id" value="{{ f.id }}">
+            <input type="hidden" name="q" value="{{ q }}">
+            <input type="hidden" name="sort" value="{{ sort }}">
+            <input type="hidden" name="page" value="{{ page }}">
+            <button class="small danger" name="action" value="delete"
+                    data-confirm="Delete {{ f.name }} from the DB channel? Every link to it stops working.">Delete</button>
+        </form>
+    </td>
+</tr>
+{% else %}
+<tr><td colspan="6">No files found. Files you store from now on appear here; use the scan below to add the ones already in your DB channel.</td></tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="pager">
+    {% if page > 1 %}<a href="?page={{ page - 1 }}&q={{ q|urlencode }}&sort={{ sort }}">&larr; Previous</a>{% endif %}
+    {% if has_next %}<a href="?page={{ page + 1 }}&q={{ q|urlencode }}&sort={{ sort }}">Next &rarr;</a>{% endif %}
+</div>
+
+<form method="POST" class="form-box" style="margin-top:24px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="q" value="{{ q }}">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <p class="hint">Files uploaded before this feature are only known once someone downloads them.
+        <strong>Scan</strong> walks through your DB channels and adds all of them at once (runs in the background,
+        big channels take a while).</p>
+    <button name="action" value="scan" {% if scan.running %}disabled{% endif %}>Scan DB channels for existing files</button>
+</form>
+
+{% endblock %}

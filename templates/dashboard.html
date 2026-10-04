@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Dashboard</h1>
+
+<div class="card-grid" data-live="{{ panel }}/api/stats">
+    <div class="card"><h3>Users</h3><p data-stat="users">{{ stats.users }}</p></div>
+    <div class="card"><h3>Banned</h3><p data-stat="banned">{{ stats.banned }}</p></div>
+    <div class="card"><h3>Premium</h3><p data-stat="premium">{{ stats.premium }}</p></div>
+    <div class="card"><h3>Files</h3><p data-stat="files">{{ stats.files }}</p></div>
+    <div class="card"><h3>Stored size</h3><p data-stat="files_size">{{ stats.files_size }}</p></div>
+    <div class="card"><h3>Downloads</h3><p data-stat="downloads">{{ stats.downloads }}</p></div>
+    <div class="card"><h3>Admins</h3><p data-stat="admins">{{ stats.admins }}</p></div>
+    <div class="card"><h3><a href="{{ panel }}/support" style="color:inherit">Support open</a></h3><p data-stat="support_open">{{ support.open }}</p></div>
+    <div class="card"><h3>Support unread</h3><p data-stat="support_unread">{{ support.unread }}</p></div>
+    <div class="card"><h3>DB channels</h3><p>{{ db_count }}</p></div>
+    <div class="card"><h3>Force-sub channels</h3><p>{{ fsub_count }}</p></div>
+    <div class="card"><h3>Bot uptime</h3><p>{{ uptime }}</p></div>
+    <div class="card"><h3>Web links</h3><p>{{ "on" if web_links else "off" }}</p></div>
+</div>
+
+<h2>Today</h2>
+<div class="card-grid">
+    <div class="card"><h3>Link clicks</h3><p>{{ today.clicks }}</p></div>
+    <div class="card"><h3>Files sent</h3><p>{{ today.delivered }}</p></div>
+    <div class="card"><h3>New users</h3><p>{{ today.new_users }}</p></div>
+    <div class="card"><h3>Verified</h3><p>{{ today.verified }}</p></div>
+    <div class="card"><h3>Bypass caught</h3><p>{{ today.bypass }}</p></div>
+    <div class="card"><h3>Revenue (₹)</h3><p>{{ today.revenue }}</p></div>
+</div>
+<p class="hint"><a href="{{ panel }}/analytics">Full analytics &rarr;</a></p>
+
+{% if not web_links %}
+<p class="hint" style="margin-top:20px">Streaming links are off because <code>WEB_URL</code> is not set.</p>
+{% endif %}
+
+{% endblock %}

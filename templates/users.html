@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Users <span class="badge">{{ total }}</span></h1>
+
+<form method="GET" class="form-box row">
+    <input type="text" name="q" value="{{ q }}" placeholder="Find by user ID">
+    <button type="submit">Search</button>
+</form>
+
+<div class="table-wrap">
+<table>
+<tr><th>User ID</th><th>Credits</th><th>Status</th><th></th></tr>
+{% for u in users %}
+<tr>
+    <td><a href="{{ panel }}/users/{{ u.id }}" style="color:var(--accent)">{{ u.id }}</a></td>
+    <td>{{ u.credits }}</td>
+    <td>
+        {% if u.banned %}<span class="badge red">banned</span>{% endif %}
+        {% if u.pro %}<span class="badge green">premium</span>{% endif %}
+    </td>
+    <td>
+        <form method="POST" class="inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="user_id" value="{{ u.id }}">
+            <input type="hidden" name="q" value="{{ q }}">
+            <input type="hidden" name="page" value="{{ page }}">
+            {% if u.banned %}
+            <button class="small" name="action" value="unban">Unban</button>
+            {% else %}
+            <button class="small danger" name="action" value="ban" data-confirm="Ban {{ u.id }}?">Ban</button>
+            {% endif %}
+        </form>
+    </td>
+</tr>
+{% else %}
+<tr><td colspan="4">No users found.</td></tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="pager">
+    {% if page > 1 %}<a href="?page={{ page - 1 }}&q={{ q|urlencode }}">&larr; Newer</a>{% endif %}
+    {% if has_next %}<a href="?page={{ page + 1 }}&q={{ q|urlencode }}">Older &rarr;</a>{% endif %}
+</div>
+
+{% endblock %}

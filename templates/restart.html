@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Restart the bot</h1>
+{% if restarting %}
+<div class="form-box">
+    <p>Restarting now. This page reloads by itself in a few seconds; if the login page shows up, the bot is back.</p>
+</div>
+<script>setTimeout(function () { location.href = "{{ panel }}/"; }, 12000);</script>
+{% else %}
+<p class="hint">The whole process restarts: the bot, the panel and the file streams. Downloads and web links that are running will be cut off.
+    It only comes back on its own where something starts it again (Render, Heroku, Docker with <code>restart: unless-stopped</code>, systemd, ...). Settings are saved in MongoDB and survive.</p>
+<form method="POST" class="form-box">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="danger" data-confirm="Restart the bot now?">Restart</button>
+</form>
+{% endif %}
+
+{% endblock %}

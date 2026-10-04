@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Support <span class="badge">{{ counts.open }} open</span>
+    {% if counts.unread %}<span class="badge red">{{ counts.unread }} unread</span>{% endif %}</h1>
+<p class="hint">Messages users send with <code>/contact</code>. You can also answer inside the bot with <code>/reply &lt;user id&gt; &lt;text&gt;</code>.
+    <a href="?all={{ 0 if show_all else 1 }}" style="color:var(--accent)">{{ "Show open only" if show_all else "Show closed too" }}</a></p>
+
+<div class="table-wrap">
+<table>
+<tr><th>User</th><th>Messages</th><th>Last activity (IST)</th><th>Last from</th><th>Status</th></tr>
+{% for t in rows %}
+<tr>
+    <td><a href="{{ panel }}/support/{{ t._id }}" style="color:var(--accent)">{{ t.name or t._id }}{% if t.username %} @{{ t.username }}{% endif %}</a>
+        <div class="sub" style="color:var(--muted);font-size:12px">{{ t._id }}</div></td>
+    <td>{{ t.msgs or 0 }}</td>
+    <td>{{ ist(t.last_at, "%Y-%m-%d %H:%M") if t.last_at else "-" }}</td>
+    <td>{{ t.last_from }}</td>
+    <td>
+        {% if t.unread %}<span class="badge red">{{ t.unread }} new</span>{% endif %}
+        {% if t.open %}<span class="badge green">open</span>{% else %}<span class="badge">closed</span>{% endif %}
+    </td>
+</tr>
+{% else %}
+<tr><td colspan="5">Nothing here. Nobody has used /contact yet.</td></tr>
+{% endfor %}
+</table>
+</div>
+
+{% endblock %}

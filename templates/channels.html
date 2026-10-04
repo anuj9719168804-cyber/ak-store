@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Channels</h1>
+<p class="hint">Read-only. Manage these from the bot's /settings menu.</p>
+
+<input type="search" class="filter" data-filter="channels-tables" placeholder="Filter channels...">
+
+<div id="channels-tables">
+<h3>DB channels</h3>
+<div class="table-wrap">
+<table id="db-table">
+<tr><th>Channel ID</th><th>Name</th><th>Status</th></tr>
+{% for c in db_rows %}
+<tr>
+    <td>{{ c.id }}</td><td>{{ c.name }}</td>
+    <td>
+        {% if c.primary %}<span class="badge green">primary</span>{% endif %}
+        {% if not c.active %}<span class="badge red">inactive</span>{% endif %}
+    </td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<h3>Force-sub channels</h3>
+<div class="table-wrap">
+<table>
+<tr><th>Channel ID</th><th>Name</th><th>Join request</th><th>Link timer (min)</th></tr>
+{% for c in fsub_rows %}
+<tr><td>{{ c.id }}</td><td>{{ c.name }}</td><td>{{ "yes" if c.request else "no" }}</td><td>{{ c.timer or "-" }}</td></tr>
+{% else %}
+<tr><td colspan="4">None configured.</td></tr>
+{% endfor %}
+</table>
+</div>
+
+</div>
+
+{% endblock %}

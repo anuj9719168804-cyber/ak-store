@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Bans <span class="badge">{{ total }}</span></h1>
+
+<form method="POST" class="form-box row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="number" name="user_id" placeholder="User ID" required>
+    <input type="text" name="reason" maxlength="200" placeholder="Reason (shown to the user, optional)">
+    <button class="danger" name="action" value="ban">Ban</button>
+</form>
+
+<input type="search" class="filter" data-filter="bans-table" placeholder="Filter this list...">
+
+<div class="table-wrap">
+<table id="bans-table">
+<tr><th>User ID</th><th>Reason</th><th>Since (IST)</th><th></th></tr>
+{% for r in rows %}
+<tr>
+    <td><a href="{{ panel }}/users/{{ r.id }}" style="color:var(--accent)">{{ r.id }}</a></td>
+    <td style="white-space:normal">{{ r.reason or "-" }}</td>
+    <td>{{ ist(r.at, "%Y-%m-%d %H:%M") if r.at else "-" }}</td>
+    <td>
+        <form method="POST" class="inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="user_id" value="{{ r.id }}">
+            <button class="small" name="action" value="unban">Unban</button>
+        </form>
+    </td>
+</tr>
+{% else %}
+<tr><td colspan="4">Nobody is banned.</td></tr>
+{% endfor %}
+</table>
+</div>
+{% if total > rows|length %}<p class="hint">Showing the latest {{ rows|length }} of {{ total }}.</p>{% endif %}
+
+{% if total %}
+<form method="POST" style="margin-top:18px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="danger" name="action" value="unban_all" data-confirm="Unban all {{ total }} users?">Unban everyone</button>
+</form>
+{% endif %}
+
+{% endblock %}

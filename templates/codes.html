@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Gift codes</h1>
+<p class="hint">Same codes as <code>/gencode</code> in the bot. Users redeem them with <code>/redeem CODE</code>, once each.</p>
+
+<form method="POST" class="form-box row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="create">
+    <select name="kind">
+        <option value="credits">Credits</option>
+        <option value="premium">Premium days</option>
+    </select>
+    <input type="number" name="amount" min="0" placeholder="Amount (premium: 0 = lifetime)" required>
+    <input type="number" name="max_uses" min="1" placeholder="How many people" required>
+    <input type="number" name="valid_days" min="0" max="3650" placeholder="Valid days (empty = no expiry)">
+    <input type="text" name="code" maxlength="32" placeholder="Own code (empty = random)">
+    <input type="text" name="note" maxlength="80" placeholder="Note (optional)">
+    <button type="submit">Create</button>
+</form>
+
+<input type="search" class="filter" data-filter="codes-table" placeholder="Filter this list...">
+
+<div class="table-wrap">
+<table id="codes-table">
+<tr><th>Code</th><th>Gives</th><th>Used</th><th>Expires (IST)</th><th>State</th><th>Note</th><th></th></tr>
+{% for c in rows %}
+<tr>
+    <td><code>{{ c.code }}</code> <button class="small" type="button" data-copy="{{ c.code }}">Copy</button></td>
+    <td>{% if c.kind == "credits" %}{{ c.amount }} credits{% elif c.amount == 0 %}lifetime premium{% else %}{{ c.amount }} days premium{% endif %}</td>
+    <td>{{ c.uses }} / {{ c.max_uses }}</td>
+    <td>{{ ist(c.expires_at, "%Y-%m-%d %H:%M") if c.expires_at else "never" }}</td>
+    <td>
+        {% if c.state == "ok" %}<span class="badge green">active</span>
+        {% elif c.state == "off" %}<span class="badge red">off</span>
+        {% elif c.state == "full" %}<span class="badge">used up</span>
+        {% else %}<span class="badge red">expired</span>{% endif %}
+    </td>
+    <td style="white-space:normal">{{ c.note }}</td>
+    <td>
+        <form method="POST" class="inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="code" value="{{ c.code }}">
+            {% if c.state == "off" %}
+            <button class="small" name="action" value="on">Switch on</button>
+            {% else %}
+            <button class="small" name="action" value="off" data-confirm="Switch off {{ c.code }}?">Switch off</button>
+            {% endif %}
+            <button class="small danger" name="action" value="delete" data-confirm="Delete {{ c.code }} for good?">Delete</button>
+        </form>
+    </td>
+</tr>
+{% else %}
+<tr><td colspan="7">No codes yet.</td></tr>
+{% endfor %}
+</table>
+</div>
+
+{% endblock %}

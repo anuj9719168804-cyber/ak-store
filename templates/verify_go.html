@@ -1,0 +1,43 @@
+{% extends "_verify_base.html" %}
+{% block title %}Checking your browser…{% endblock %}
+{% block body %}
+<div class="icon" id="icon">🔍</div>
+<h1 id="title">Checking your browser…</h1>
+<p id="text">This takes a moment. You will be sent on automatically.</p>
+<div class="bar" id="bar"><i></i></div>
+{% if ts_key %}<div id="ts" style="display:flex;justify-content:center;margin-top:10px"></div>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>{% endif %}
+<button class="btn" id="retry" style="display:none" type="button">Try again</button>
+
+<script src="/static/verify.js"></script>
+<script>
+(function () {
+  var TID = {{ tid|tojson }}, CH = {{ challenge|tojson }}, BITS = {{ bits|tojson }}, TSKEY = {{ ts_key|tojson }};
+  var $ = function (id) { return document.getElementById(id); };
+
+  function fail(msg) {
+    $("icon").textContent = "⚠️"; $("title").textContent = "Could not continue";
+    $("text").textContent = msg; $("bar").style.display = "none"; $("retry").style.display = "inline-block";
+  }
+
+  function run() {
+    var t0 = Date.now();
+    $("retry").style.display = "none"; $("bar").style.display = "block";
+    var ts = TSKEY ? FSV.turnstile($("ts"), TSKEY) : null;
+    FSV.solve(CH, BITS).then(function (nonce) {
+      return (ts ? ts.ready : Promise.resolve(null)).then(function () {
+        return FSV.post("/go/" + TID + "/start", { nonce: nonce, sig: FSV.signals(false), ts: ts ? ts.token() : null });
+      });
+    }).then(function (res) {
+      if (!res.ok) { fail(res.msg || "Browser check failed."); return; }
+      var wait = Math.max(0, 900 - (Date.now() - t0));      /* never flash past, so people can read it */
+      $("icon").textContent = "✅"; $("title").textContent = "Browser verified";
+      $("text").textContent = "Opening the next step…";
+      setTimeout(function () { location.replace(res.url); }, wait);
+    }).catch(function (e) { fail(e && /captcha/.test(e.message) ? "The security check could not load. Reload and try again." : "Network problem. Check your connection and try again."); });
+  }
+  $("retry").addEventListener("click", run);
+  run();
+})();
+</script>
+{% endblock %}

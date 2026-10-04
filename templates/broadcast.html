@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block head %}{% if st.running %}<meta http-equiv="refresh" content="3">{% endif %}{% endblock %}
+{% block content %}
+
+<h1>Broadcast</h1>
+
+{% if st.total is defined %}
+<div class="form-box">
+    <strong>{{ "Running..." if st.running else "Last broadcast finished" }}</strong>
+    <p class="hint" style="margin:8px 0 0">
+        Processed {{ st.total }} &middot; sent {{ st.sent }} &middot; blocked/deleted {{ st.blocked }} &middot; failed {{ st.failed }}
+    </p>
+</div>
+{% endif %}
+
+<form method="POST" class="form-box">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <textarea name="message" rows="6" placeholder="Plain text message to every user..." required></textarea>
+    <button type="submit" {% if st.running %}disabled{% endif %}>Send broadcast</button>
+</form>
+
+{% endblock %}

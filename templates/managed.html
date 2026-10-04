@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Limited links</h1>
+<p class="hint">A link that stops after a time or after N people got the files. Paste a post link, a message ID, or a link
+    made by /genlink or /batch. The original link keeps working: only the new <code>lk_</code> link is limited.</p>
+
+<form method="POST" class="form-box row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="create">
+    <input type="text" name="source" placeholder="https://t.me/c/123/45  or  45  or  a bot link" required>
+    <input type="text" name="ttl" placeholder="time: 24h, 7d, 0 = none" value="24h" size="14">
+    <input type="number" name="max_uses" min="0" placeholder="people (0 = any)" value="0">
+    <input type="text" name="note" placeholder="note (optional)" maxlength="80">
+    <button type="submit">Create</button>
+</form>
+
+{% if rows %}
+<table>
+    <tr><th>Link</th><th>State</th><th>Used</th><th>Clicks</th><th>Ends (IST)</th><th>Note</th><th></th></tr>
+    {% for r in rows %}
+    <tr>
+        <td><code class="link">{{ r.link or ("lk_" ~ r.token) }}</code></td>
+        <td>{{ {"ok": "🟢 live", "expired": "⌛ expired", "full": "🔒 limit reached", "revoked": "⛔ revoked"}[r.state] }}</td>
+        <td>{{ r.uses }}{% if r.max_uses %} / {{ r.max_uses }}{% endif %}</td>
+        <td>{{ r.clicks }}</td>
+        <td>{{ ist(r.expires_at, "%Y-%m-%d %H:%M") if r.expires_at else "never" }}</td>
+        <td>{{ r.note }}</td>
+        <td>{% if r.state == "ok" %}
+            <form method="POST" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="revoke"><input type="hidden" name="token" value="{{ r.token }}">
+                <button type="submit" onclick="return confirm('Revoke this link? It stops working for everyone.')">Revoke</button>
+            </form>{% endif %}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}<p class="hint">No limited links yet.</p>{% endif %}
+
+{% endblock %}

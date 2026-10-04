@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Stream links</h1>
+<p class="hint">Paste a DB-channel post link (https://t.me/c/&lt;id&gt;/&lt;msg&gt;), or just the message ID for the primary DB channel.</p>
+
+<form method="POST" class="form-box row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="text" name="source" value="{{ source }}" placeholder="https://t.me/c/1234567890/42  or  42" required>
+    <button type="submit">Create links</button>
+</form>
+
+{% if result %}
+<div class="form-box">
+    <strong>{{ result.name }}</strong>
+    <h3>Watch</h3><code class="link">{{ result.links.watch }}</code>
+    <h3>Direct</h3><code class="link">{{ result.links.direct }}</code>
+    <h3>Download</h3><code class="link">{{ result.links.download }}</code>
+</div>
+{% endif %}
+
+{% endblock %}

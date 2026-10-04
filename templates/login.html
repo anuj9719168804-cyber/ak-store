@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Admin Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-page">
+
+<form method="POST" class="login-box">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h2>Admin Login</h2>
+    {% if error %}<p style="color:#f87171;margin-bottom:12px">{{ error }}</p>{% endif %}
+    <input type="password" name="password" placeholder="Enter Password" required autofocus>
+    <button type="submit">Login</button>
+</form>
+
+<script>
+// Opened from the bot's "Control Panel" button: Telegram puts the signed launch
+// data in the URL hash. The server checks it and only accepts the bot owner.
+(function () {
+    var init = new URLSearchParams(location.hash.slice(1)).get("tgWebAppData");
+    if (!init) return;
+    fetch("tg-login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        credentials: "same-origin",
+        body: JSON.stringify({init_data: init})
+    }).then(function (r) { if (r.ok) location.replace("./"); }).catch(function () {});
+})();
+</script>
+
+</body>
+</html>

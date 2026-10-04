@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Premium Users</h1>
+
+<form method="POST" class="form-box row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="number" name="user_id" placeholder="User ID" required>
+    <input type="number" name="days" min="1" placeholder="Days (empty = permanent)">
+    <button name="action" value="add">Set premium</button>
+</form>
+
+<input type="search" class="filter" data-filter="premium-table" placeholder="Filter this list...">
+
+<div class="table-wrap">
+<table id="premium-table">
+<tr><th>User ID</th><th>Expires</th><th>Status</th><th></th></tr>
+{% for r in rows %}
+<tr>
+    <td>{{ r.id }}</td>
+    <td>{{ "never" if r.permanent else r.expiry.strftime("%Y-%m-%d %H:%M") }}</td>
+    <td>{% if r.active %}<span class="badge green">active</span>{% else %}<span class="badge red">expired</span>{% endif %}</td>
+    <td>
+        <form method="POST" class="inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="user_id" value="{{ r.id }}">
+            <button class="small danger" name="action" value="remove" data-confirm="Remove premium from {{ r.id }}?">Remove</button>
+        </form>
+    </td>
+</tr>
+{% else %}
+<tr><td colspan="4">No premium users.</td></tr>
+{% endfor %}
+</table>
+</div>
+
+{% endblock %}

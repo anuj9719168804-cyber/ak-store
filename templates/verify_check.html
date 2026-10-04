@@ -1,0 +1,56 @@
+{% extends "_verify_base.html" %}
+{% block title %}Final step{% endblock %}
+{% block body %}
+<div class="icon" id="icon">🛡️</div>
+<h1 id="title">One last check</h1>
+<p id="text">Checking your browser, then tap the button.</p>
+<div class="bar" id="bar"><i></i></div>
+{% if ts_key %}<div id="ts" style="display:flex;justify-content:center;margin-top:10px"></div>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>{% endif %}
+<button class="btn" id="go" type="button" disabled>Continue to Telegram</button>
+<p class="small" id="note" style="margin-top:14px"></p>
+
+<script src="/static/verify.js"></script>
+<script>
+(function () {
+  var TID = {{ tid|tojson }}, CH = {{ challenge|tojson }}, BITS = {{ bits|tojson }}, TSKEY = {{ ts_key|tojson }};
+  var ts = TSKEY ? FSV.turnstile(document.getElementById("ts"), TSKEY) : null;
+  var $ = function (id) { return document.getElementById(id); };
+  var nonce = null, ready = false, busy = false, opened = Date.now();
+
+  function refresh() {
+    ready = nonce !== null && (!ts || ts.token()) && Date.now() - opened >= 2500;       /* the server wants the page open a moment too */
+    $("go").disabled = !ready || busy;
+    if (nonce !== null) { $("bar").style.display = "none"; $("text").textContent = "All set. Tap the button to continue."; }
+  }
+
+  FSV.solve(CH, BITS).then(function (n) { nonce = n; refresh(); setTimeout(refresh, 2600); });
+  if (ts) {
+    ts.ready.then(refresh, function () { $("text").textContent = "The security check could not load. Reload this page."; });
+    setInterval(refresh, 1000);                                  /* a token expires after 5 min: the button follows it */
+  }
+
+  $("go").addEventListener("click", function (ev) {
+    if (!ready || busy) return;
+    busy = true; $("go").disabled = true; $("text").textContent = "Verifying…";
+    FSV.post("/verify/" + TID + "/done", { nonce: nonce, sig: FSV.signals(ev.isTrusted), ts: ts ? ts.token() : null }).then(function (res) {
+      if (!res.ok) {
+        $("icon").textContent = "⚠️"; $("title").textContent = "Verification failed";
+        $("text").textContent = res.msg || "Please try again from Telegram."; $("go").style.display = "none";
+        return;
+      }
+      $("icon").textContent = "✅"; $("title").textContent = "Verified";
+      $("text").textContent = "Returning to Telegram…";
+      $("go").style.display = "none";
+      var a = document.createElement("a");
+      a.className = "btn"; a.href = res.url; a.textContent = "Open Telegram";
+      $("note").textContent = "If Telegram does not open by itself, tap the button.";
+      $("note").parentNode.insertBefore(a, $("note"));
+      location.href = res.url;
+    }).catch(function () {
+      busy = false; refresh(); $("text").textContent = "Network problem. Tap again.";
+    });
+  });
+})();
+</script>
+{% endblock %}

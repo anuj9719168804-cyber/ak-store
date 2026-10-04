@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Analytics</h1>
+<p class="hint">Last {{ days }} days (IST).
+    <a href="?days=7">7</a> · <a href="?days=14">14</a> · <a href="?days=30">30</a> · <a href="?days=60">60</a></p>
+
+<div class="card-grid">
+    <div class="card"><h3>Link clicks</h3><p>{{ totals.clicks }}</p></div>
+    <div class="card"><h3>Files sent</h3><p>{{ totals.delivered }}</p></div>
+    <div class="card"><h3>New users</h3><p>{{ totals.new_users }}</p></div>
+    <div class="card"><h3>Verified</h3><p>{{ totals.verified }}</p></div>
+    <div class="card"><h3>Bypass caught</h3><p>{{ totals.bypass }}</p></div>
+    <div class="card"><h3>Orders</h3><p>{{ totals.orders }}</p></div>
+    <div class="card"><h3>Revenue (₹)</h3><p>{{ totals.revenue }}</p></div>
+</div>
+
+<div class="form-box chart-box">{{ traffic|safe }}</div>
+<div class="form-box chart-box">{{ guard|safe }}</div>
+
+<h2>Top files</h2>
+{% if top_files %}
+<table>
+    <tr><th>File</th><th>Downloads</th><th>Last download</th></tr>
+    {% for f in top_files %}
+    <tr><td>{{ f.name }}</td><td>{{ f.downloads }}</td><td>{{ ist(f.last_download, "%Y-%m-%d %H:%M") if f.last_download else "-" }}</td></tr>
+    {% endfor %}
+</table>
+{% else %}<p class="hint">No downloads recorded yet.</p>{% endif %}
+
+<h2>Top links</h2>
+{% if top_links %}
+<table>
+    <tr><th>Link</th><th>Clicks</th><th>Last click (IST)</th></tr>
+    {% for l in top_links %}
+    <tr><td><code>{{ l.label }}</code></td><td>{{ l.clicks }}</td><td>{{ ist(l.last, "%Y-%m-%d %H:%M") if l.last else "-" }}</td></tr>
+    {% endfor %}
+</table>
+<p class="hint">Clicks count people who opened a working link (a blocked or expired link is not a click).</p>
+{% else %}<p class="hint">No clicks recorded yet.</p>{% endif %}
+
+<h2>Recent orders</h2>
+{% if orders %}
+<table>
+    <tr><th>When (IST)</th><th>User</th><th>What</th><th>Method</th><th>Amount</th><th>Status</th></tr>
+    {% for o in orders %}
+    <tr>
+        <td>{{ ist(o.created, "%Y-%m-%d %H:%M") }}</td><td>{{ o.user_id }}</td><td>{{ o.kind }} / {{ o.plan }}</td><td>{{ o.method }}</td>
+        <td>{% if o.currency == "INR" %}₹{{ "%g"|format(o.amount / 100) }}{% else %}${{ "%g"|format(o.amount) }}{% endif %}</td>
+        <td>{{ o.status }}{% if o.get("mismatch") %} (amount mismatch: {{ o.mismatch }}){% endif %}{% if o.status == "paid" and not o.get("fulfilled") %} ⚠ not fulfilled{% endif %}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}<p class="hint">No orders yet. Online payments need Razorpay / NOWPayments keys (see .env.example).</p>{% endif %}
+
+{% endblock %}
