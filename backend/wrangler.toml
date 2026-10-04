@@ -1,0 +1,7 @@
+name = "filestore-permanent-link"
+main = "index.js"
+compatibility_date = "2024-09-23"
+
+[vars]
+# Your bot's username, with or without the @
+BOT_USERNAME = ""
