@@ -1,0 +1,107 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #0f172a; --panel: #111827; --card: #1e293b; --line: #334155;
+    --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --danger: #7f1d1d;
+}
+
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+.sidebar { width: 230px; height: 100vh; background: var(--panel); position: fixed; padding: 25px 15px; overflow-y: auto; }
+.sidebar h2 { margin-bottom: 30px; font-size: 20px; color: var(--accent); }
+.sidebar a { display: block; padding: 12px; margin-bottom: 8px; color: #cbd5e1; text-decoration: none; border-radius: 8px; transition: .2s; }
+.sidebar a:hover { background: #1f2937; color: var(--accent); }
+.sidebar .logout { margin-top: 20px; background: var(--danger); }
+
+.main { margin-left: 250px; padding: 40px; max-width: 1100px; }
+h1 { margin-bottom: 25px; }
+h3 { margin: 24px 0 8px; color: var(--muted); font-weight: 600; }
+p.hint { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.card { background: var(--card); padding: 22px; border-radius: 14px; box-shadow: 0 5px 15px rgba(0,0,0,.3); }
+.card h3 { margin: 0 0 8px; font-size: 14px; }
+.card p { font-size: 24px; font-weight: bold; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+table th, table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+table th { background: var(--card); }
+
+.form-box { background: var(--card); padding: 18px; border-radius: 12px; margin-bottom: 18px; }
+.form-box.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start; }
+.form-box.row input { flex: 1 1 140px; margin-bottom: 0; }
+input, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: none; background: var(--line); color: #fff; font: inherit; }
+
+button { padding: 10px 16px; border: none; border-radius: 8px; background: var(--accent); color: #000; font-weight: bold; cursor: pointer; }
+button:hover { background: #0ea5e9; }
+button.danger { background: #f87171; }
+button.small { padding: 5px 10px; font-size: 13px; }
+form.inline { display: inline; }
+
+.flash { padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; }
+.flash.ok { background: #14532d; }
+.flash.err { background: var(--danger); }
+
+.badge { padding: 2px 8px; border-radius: 999px; font-size: 12px; background: var(--line); }
+.badge.red { background: var(--danger); }
+.badge.green { background: #14532d; }
+
+code.link { display: block; word-break: break-all; background: var(--panel); padding: 10px; border-radius: 8px; margin: 6px 0 12px; font-size: 13px; }
+
+.pager { margin-top: 16px; display: flex; gap: 14px; }
+.pager a { color: var(--accent); }
+
+.login-page { display: flex; justify-content: center; align-items: center; height: 100vh; }
+.login-box { background: var(--card); padding: 30px; border-radius: 14px; width: 320px; max-width: 92vw; text-align: center; }
+.login-box h2 { margin-bottom: 16px; }
+
+@media (max-width: 768px) {
+    .sidebar { position: static; width: 100%; height: auto; display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; }
+    .sidebar h2 { width: 100%; margin: 0 0 6px; font-size: 17px; }
+    .sidebar a { margin: 0; padding: 8px 10px; font-size: 14px; }
+    .sidebar .logout { margin-top: 0; }
+    .main { margin-left: 0; padding: 16px; }
+}
+
+/* ---- filter box, toggles, toasts ---- */
+input.filter { max-width: 320px; margin: 4px 0 0; }
+label.check { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; cursor: pointer; }
+label.check input[type=checkbox] { width: 18px; height: 18px; margin: 0; flex: none; accent-color: var(--accent); }
+.form-box label.field { display: block; margin: 4px 0 6px; color: var(--muted); font-size: 14px; }
+
+#toasts { position: fixed; right: 18px; bottom: 18px; display: flex; flex-direction: column; gap: 8px; z-index: 50; max-width: min(360px, 90vw); }
+.toast { background: #14532d; color: #fff; padding: 12px 16px; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,.4); transition: opacity .3s; }
+.toast.err { background: var(--danger); }
+.toast.hide { opacity: 0; }
+
+/* ---- files page, selects, logout button, login code ---- */
+select { padding: 10px; margin-bottom: 12px; border-radius: 8px; border: none; background: var(--line); color: #fff; font: inherit; }
+.form-box.row select { flex: 0 1 180px; margin-bottom: 0; }
+td.name-cell { max-width: 340px; overflow: hidden; text-overflow: ellipsis; }
+td.name-cell .sub { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.sidebar form.logout-form { margin-top: 20px; }
+.sidebar button.logout { display: block; width: 100%; padding: 12px; text-align: left; font-weight: normal; color: #cbd5e1; background: var(--danger); border-radius: 8px; }
+.sidebar button.logout:hover { background: #991b1b; }
+input[name=code] { text-align: center; font-size: 22px; letter-spacing: 6px; }
+@media (max-width: 768px) {
+    .sidebar form.logout-form { margin-top: 0; }
+    .sidebar button.logout { padding: 8px 10px; font-size: 14px; width: auto; }
+}
+
+/* v9: analytics charts */
+.chart-box { padding: 12px; overflow-x: auto; }
+.chart { width: 100%; max-width: 760px; height: auto; display: block; }
+.chart .cg { stroke: currentColor; stroke-opacity: .12; }
+.chart .cl { fill: currentColor; font-size: 10px; opacity: .7; }
+.chart .ct { fill: currentColor; font-size: 12px; font-weight: 600; }
+
+/* v10: support conversation */
+.chat { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.bubble { max-width: min(640px, 92%); padding: 10px 14px; border-radius: 12px; background: var(--card); }
+.bubble.admin { align-self: flex-end; background: #0c4a6e; }
+.bubble .who { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.bubble .text { white-space: pre-wrap; word-break: break-word; }
+textarea { resize: vertical; }
+
