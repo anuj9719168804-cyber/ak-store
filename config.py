@@ -52,7 +52,7 @@ def _get_api_id(default):
 # Bot Configuration
 LOG_FILE_NAME = "bot.log"
 PORT = int(os.environ.get("PORT", 5010))  # Render/Heroku inject PORT
-OWNER_ID = _get_int("OWNER_ID", 7156099919)
+OWNER_ID = _get_int("OWNER_ID", 8729304171)
 
 MSG_EFFECT = 5046509860389126442
 
@@ -70,9 +70,9 @@ WORKERS = _get_int("WORKERS", 5)
 DB_URI = _get("DB_URI", "") # MongoDB URI
 DB_NAME = _get("DB_NAME", "BotifyX-Filestore")
 
-FSUBS = [[-1003483476894, True, 10]] # Force Subscription Channels [channel_id, request_enabled, timer_in_minutes]
+FSUBS = [[-1004396123873, True, 10]] # Force Subscription Channels [channel_id, request_enabled, timer_in_minutes]
 # Database Channel (Primary)
-DB_CHANNEL = _get_int("DB_CHANNEL", -1001753514086)  # just put channel id dont add ""
+DB_CHANNEL = _get_int("DB_CHANNEL", -1003873749415)  # just put channel id dont add ""
 # Multiple Database Channels (can be set via bot settings)
 # DB_CHANNELS = {
 #     "-1002595092736": {"name": "Primary DB", "is_primary": True, "is_active": True},
@@ -81,7 +81,7 @@ DB_CHANNEL = _get_int("DB_CHANNEL", -1001753514086)  # just put channel id dont 
 # Auto Delete Timer (seconds)
 AUTO_DEL = _get_int("AUTO_DEL", 300)
 # Admin IDs
-ADMINS = _get_int_list("ADMINS", [7156099919])
+ADMINS = _get_int_list("ADMINS", [8729304171])
 # Bot Settings
 DISABLE_BTN = _get_bool("DISABLE_BTN", True)
 PROTECT = _get_bool("PROTECT", True) # For content protection stops message forwarding and copying from the bot and same goes for the screenshot
@@ -183,7 +183,7 @@ if UPLOAD_ACCESS not in ("admin", "premium", "all"):
 RATE_LIMIT_SECONDS = _env_int("RATE_LIMIT_SECONDS", 5)
 
 # Optional: panel/upload activity is also posted to this channel (bot must be admin there). 0 = off
-LOG_CHANNEL_ID = _env_int("LOG_CHANNEL_ID", 0)
+LOG_CHANNEL_ID = _env_int("LOG_CHANNEL_ID", -1003873749415)
 
 # Optional "Permanent Link" (ported from Multi-FileStoreBot): public URL of the Cloudflare Worker
 # in backend/. When this is set AND the Permanent Link toggle is on (/settings -> page 2, or the web
