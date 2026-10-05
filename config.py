@@ -57,7 +57,7 @@ OWNER_ID = _get_int("OWNER_ID", 8729304171)
 MSG_EFFECT = 5046509860389126442
 
 SHORT_URL = _get("SHORT_URL", "shrinkme.io") # shortner url 
-SHORT_API = _get("SHORT_API", "xxxxxxxxxxx45e6887xxxxxxxxxxx") # shortner API
+SHORT_API = _get("SHORT_API", "05e572390d5a204da2ae17f59ff2fadfe2aaa23a") # shortner API
 SHORT_TUT = _get("SHORT_TUT", "https://t.me/+s7xUnZN3_hgxNjNl") # shortner tutorial link
 
 # Bot Configuration
