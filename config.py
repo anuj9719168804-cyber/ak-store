@@ -62,9 +62,9 @@ SHORT_TUT = _get("SHORT_TUT", "https://t.me/ANIME_X_FLEX/19") # shortner tutoria
 
 # Bot Configuration
 SESSION = _get("SESSION", "BotifyX-Botz")
-TOKEN = _get("TOKEN", "82074727111:xxxxxxxxxxxxxxxxxx") # Bot token
-API_ID = _get_api_id("xxxxxx") # API ID
-API_HASH = _get("API_HASH", "xxxxxxxxxxxxxxxxxx") # API HASH
+TOKEN = _get("TOKEN", "8815294227:AAHrGIgha2w2oKLEFlir7l038Yo8JYyHy6o") # Bot token
+API_ID = _get_api_id("20432885") # API ID
+API_HASH = _get("API_HASH", "4fdcfab1c7f5e24ae69f3ce6bb234dec") # API HASH
 WORKERS = _get_int("WORKERS", 5)
 
 DB_URI = _get("DB_URI", "") # MongoDB URI
