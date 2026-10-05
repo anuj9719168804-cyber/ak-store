@@ -61,7 +61,7 @@ SHORT_API = _get("SHORT_API", "xxxxxxxxxxx45e6887xxxxxxxxxxx") # shortner API
 SHORT_TUT = _get("SHORT_TUT", "https://t.me/+s7xUnZN3_hgxNjNl") # shortner tutorial link
 
 # Bot Configuration
-SESSION = _get("SESSION", "BotifyX-Botz")
+SESSION = _get("SESSION", "1BVtsOIUBu1p95DBVItZu_9cKP7_1aJJl9f-sDqeHr4tpVwV3H1XsaQL8U9vKbH_fhf6ov-NBS9MfMykioaeD2vF8ExH7pOkqQ6NQ9klIWi1p4BzCj8Og5VTKUMW6s2tPhjscwH_wSw3zdg6HqEagS7xPihenm71vj-lWo85xGY_wx6vYg8fjoNF_iPO3cWrHdZOMGMZXW6MPPvk4bRF8HodXC8guvQOhFyLmFUvI2irIvpgZCDBRK-oMLMtXKeQxNdSKAii_0ksWA1turWSR6DJLaLT-mslLtQMZFZWolMhkY4zw1AbSnXXGsTUwMW_2w8EEi2MMVMMaF4dIvbWiFnO9npEtj0k=")
 TOKEN = _get("TOKEN", "8815294227:AAHrGIgha2w2oKLEFlir7l038Yo8JYyHy6o") # Bot token
 API_ID = _get_api_id("20432885") # API ID
 API_HASH = _get("API_HASH", "4fdcfab1c7f5e24ae69f3ce6bb234dec") # API HASH
