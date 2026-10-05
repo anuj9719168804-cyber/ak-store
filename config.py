@@ -67,7 +67,7 @@ API_ID = _get_api_id("20432885") # API ID
 API_HASH = _get("API_HASH", "4fdcfab1c7f5e24ae69f3ce6bb234dec") # API HASH
 WORKERS = _get_int("WORKERS", 5)
 
-DB_URI = _get("DB_URI", "") # MongoDB URI
+DB_URI = _get("DB_URI", "mongodb+srv://Anujedit:Anujedit@cluster0.7cs2nhd.mongodb.net/?appName=Cluster0") # MongoDB URI
 DB_NAME = _get("DB_NAME", "BotifyX-Filestore")
 
 FSUBS = [[-1004396123873, True, 10]] # Force Subscription Channels [channel_id, request_enabled, timer_in_minutes]
