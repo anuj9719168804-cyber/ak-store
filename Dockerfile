@@ -6,7 +6,7 @@
 # Before deploying, edit config.py with your values
 # ================================================
 
-FROM python:3.11-slim-bullseye
+FROM python:3.11-slim-bookworm
 
 LABEL maintainer="botifyx-bots"
 LABEL description="File-Store-Pro — Advanced Telegram File Share Bot"
